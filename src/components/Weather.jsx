@@ -13,10 +13,15 @@ import wind from '../assets/wind.png'
 
 const Weather = () => {
     const inputRef = useRef();
-    const [weatherData , setWeatherData] = useState(false);
+    const [weatherData, setWeatherData] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState(null);
+
     // Add search function to trigger weather fetch
     const search = (city) => {
-        getWeatherData(city);
+        if (!isLoading) {
+            getWeatherData(city);
+        }
     };
 
     // Add Enter key support for input
@@ -44,14 +49,19 @@ const Weather = () => {
 
   
 
-    const getWeatherData =async (city) => {
+    const getWeatherData = async (city) => {
         try {
             if(city === ""){
-                alert("Please enter a city name");
+                setError("Please enter a city name");
                 return;
             }
+            setIsLoading(true);
+            setError(null);
             const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${import.meta.env.VITE_WEATHER_API}`;
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(response.status === 404 ? "City not found" : "Failed to fetch weather data");
+            }
             const data = await response.json();
             // Defensive checks for API response
             const iconCode = allIcons[data.weather && data.weather[0] && data.weather[0].icon ? data.weather[0].icon : "01d"] || clear;
@@ -65,7 +75,10 @@ const Weather = () => {
             });
         } catch (error) {
             console.log("Error fetching weather data:", error);
+            setError(error.message);
             setWeatherData(false);
+        } finally {
+            setIsLoading(false);
         }
     }
 
@@ -81,29 +94,53 @@ const Weather = () => {
             <input type="text" placeholder='Search'  ref={inputRef} onKeyDown={handleKeyDown}/>
             <img src="./src/assets/search.png" alt="Search_Icon"  onClick={() => search(inputRef.current.value)}/>
         </div>
-        {weatherData ?
-         <><img src={weatherData.icon} alt="weather status image"  className='weather-status-icon'/>
-        <p className='temperature'>{weatherData.temperature}°C  </p>
-        <p className='city-name'>{weatherData.city}</p>
-
-        <div className="weather-data">
-            <div className="col">
+        {isLoading ? (
+          <div className="loading">
+            <div className="loading-spinner"></div>
+            <p>Fetching weather data...</p>
+          </div>
+        ) : error ? (
+          <div className="error-message">
+            <p>{error}</p>
+            <button onClick={() => getWeatherData("Gujrat")} className="retry-button">
+              Try Again
+            </button>
+          </div>
+        ) : weatherData ? (
+          <div className="weather-content fade-in">
+            <div className="weather-main-info">
+              <img 
+                src={weatherData.icon} 
+                alt={`Weather in ${weatherData.city}`}  
+                className='weather-status-icon'
+              />
+              <p className='temperature'>{weatherData.temperature}°C</p>
+              <p className='city-name'>{weatherData.city}</p>
+            </div>
+            
+            <div className="weather-data">
+              <div className="col slide-in-left">
                 <img src={humidity} alt="Humidity Icon" />
-               <div>
-                 <p>{weatherData.humidity} % </p>
-                 <span>Humidity</span>
-               </div>
-            </div>
+                <div>
+                  <p>{weatherData.humidity}%</p>
+                  <span>Humidity</span>
+                </div>
+              </div>
 
-             <div className="col">
+              <div className="col slide-in-right">
                 <img src={wind} alt="Wind Icon" />
-               <div>
-                 <p>{weatherData.windSpeed} Km/h </p>
-                 <span>Wind</span>
-               </div>
+                <div>
+                  <p>{weatherData.windSpeed} Km/h</p>
+                  <span>Wind</span>
+                </div>
+              </div>
             </div>
-
-        </div></> : <><p>API Key Issue</p></>}
+          </div>
+        ) : (
+          <div className="initial-message">
+            <p>Enter a city name to get weather information</p>
+          </div>
+        )}
         
     </div>
   )

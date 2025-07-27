@@ -1,31 +1,174 @@
-/* Hide scrollbars for all browsers */
-body {
+/* Modern CSS Reset and Optimizations */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+    height: 100%;
     overflow: hidden;
+    position: fixed;
+    width: 100%;
 }
 
-/* For Webkit browsers */
-::-webkit-scrollbar {
-    display: none;
+#root {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
 }
 
-/* For Firefox */
-html {
-    scrollbar-width: none;
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
-.weather-container{
-    min-height: 80vh;
-    max-width: 420px;
-    width: 90vw;
-    margin: 5vh auto;
-    padding: 32px 18px;
-    border-radius: 16px;
+
+@keyframes slideInLeft {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.5s ease-out;
+}
+
+/* Loading Spinner */
+.loading {
+    text-align: center;
+    padding: clamp(10px, 2vh, 20px);
+    color: #ebfffc;
+    font-size: clamp(14px, 1.8vw, 16px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-spinner {
+    width: clamp(30px, 5vw, 40px);
+    height: clamp(30px, 5vw, 40px);
+    border: clamp(3px, 0.5vw, 4px) solid rgba(255, 255, 255, 0.1);
+    border-left-color: #ebfffc;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: clamp(10px, 2vh, 20px) auto;
+}
+
+.weather-main-info {
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-sizing: border-box;
-    background: rgba(255,255,255,0.05);
-    position: relative;
-    /* Responsive adjustments below */
+    justify-content: center;
+    gap: clamp(8px, 2vh, 16px);
+    width: 100%;
+    margin: clamp(16px, 3vh, 32px) 0;
+    text-align: center;
+}
+
+.error-message {
+    color: #ff6b6b;
+    text-align: center;
+    padding: clamp(10px, 2vh, 20px);
+    background: rgba(255,107,107,0.1);
+    border-radius: clamp(6px, 1vw, 8px);
+    margin: clamp(10px, 2vh, 20px) 0;
+    font-size: clamp(14px, 1.8vw, 16px);
+}
+
+.retry-button {
+    background: #ebfffc;
+    color: #333;
+    border: none;
+    padding: clamp(6px, 1vh, 8px) clamp(12px, 2vw, 16px);
+    border-radius: 20px;
+    margin-top: clamp(8px, 1.5vh, 10px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: clamp(12px, 1.6vw, 14px);
+}
+
+.initial-message {
+    color: #ebfffc;
+    text-align: center;
+    padding: clamp(10px, 2vh, 20px);
+    font-size: clamp(14px, 1.8vw, 16px);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.weather-container {
+    height: min(600px, 90vh);
+    width: min(400px, 90vw);
+    padding: clamp(12px, 3vw, 32px);
+    border-radius: clamp(12px, 2vw, 16px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.error-message {
+    color: #ff6b6b;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255,107,107,0.1);
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.retry-button {
+    background: #ebfffc;
+    color: #333;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.retry-button:hover {
+    background: #d4f7f7;
+    transform: scale(1.05);
+}
+
+.initial-message {
+    color: #ebfffc;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.1em;
 }
 
 
@@ -135,27 +278,42 @@ html {
     transition: width 0.2s, padding 0.2s;
 }
 
-.weather-status-icon{
-    width: 150px;
-    margin: 30px 0 ;
+.weather-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: clamp(8px, 2vh, 16px);
 }
 
-.temperature{
-    font-size: 60px;
+.weather-status-icon {
+    width: clamp(80px, 15vw, 150px);
+    aspect-ratio: 1;
+    object-fit: contain;
+    display: block;
+    margin: 0;
+}
+
+.temperature {
+    font-size: clamp(32px, 6vw, 60px);
     font-weight: 600;
     color: #ebfffc;
     text-align: center;
     line-height: 1;
-    padding: 10px 0;
-    margin-bottom: 10px;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
-.city-name{
-    font-size: 30px;
+.city-name {
+    font-size: clamp(20px, 4vw, 30px);
     font-weight: 500;
     color: #ebfffc;
-    padding: 8px 0;
-    margin-bottom: 10px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    width: 100%;
 }
 
 
